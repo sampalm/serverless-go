@@ -1,0 +1,3 @@
+GOOS=linux GOARCH=amd64 go build -o main zip main.zip main
+
+set GOOS=linux set GOARCH=amd64 set CGO_ENABLED=0 go build -o main main.go %GOPATH%\bin\build-lambda-zip.exe -o main.zip main
