@@ -16,7 +16,7 @@ func run(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	log.Printf("Waiting for command to finish...\n")
 	if err := cmd.Run(); err != nil {
-		return err
+		return fmt.Errorf("Run: Command Execution Error: ", err)
 	}
 	log.Printf("Done!\n")
 	return nil
@@ -25,7 +25,7 @@ func run(name string, args ...string) error {
 func zip(path string) error {
 	f, err := os.Open(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("Zip: Open Error: ", err)
 	}
 	defer f.Close()
 	ds, err := os.OpenFile(path+".zip", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0466)
@@ -42,17 +42,17 @@ func zip(path string) error {
 }
 
 func main() {
-	path := "main"
+	fpath := "main"
 	if len(os.Args) > 1 {
-		path = os.Args[1]
+		fpath = os.Args[1]
 	}
-	fmt.Println("Building: " + path + ".go")
-	err := run("go", "build", "-o", path, path+".go")
+	fmt.Println("Building: " + fpath + ".go")
+	err := run("go", "build", "-o", fpath, fpath+".go")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println("Zipping: " + path + ".zip")
-	err = zip(path)
+	fmt.Println("Zipping: " + fpath + ".zip")
+	err = zip(fpath)
 	if err != nil {
 		log.Fatalln(err)
 	}
