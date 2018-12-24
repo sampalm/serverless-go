@@ -1,4 +1,7 @@
 #FILES#
 *.zip
 *.exe
+#PAYLOADS# 
+outfile*
+*pay.txt 
 #FOLDER#
