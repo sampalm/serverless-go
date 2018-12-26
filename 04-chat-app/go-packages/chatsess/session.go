@@ -38,7 +38,7 @@ func GetLogin(id string, sess *session.Session) (Login, error) {
 	if _, ok := res.Item["username"]; !ok {
 		return Login{}, fmt.Errorf("No username found")
 	}
-	return Login{Sessid: res.Item["sessid"].GoString(), Username: res.Item["username"].GoString()}, nil
+	return Login{Sessid: *(res.Item["sessid"].S), Username: *(res.Item["username"].S)}, nil
 }
 
 func (l Login) Put(sess *session.Session) error {
@@ -50,5 +50,21 @@ func (l Login) Put(sess *session.Session) error {
 			"username": {S: aws.String(l.Username)},
 		},
 	})
+	return err
+}
+
+func (l Login) Delete(sess *session.Session) error {
+	cdb := dynamodb.New(sess)
+	_, err := cdb.DeleteItem(&dynamodb.DeleteItemInput{
+		TableName: aws.String("ch_sessions"),
+		Key: map[string]*dynamodb.AttributeValue{
+			"sessid": {S: aws.String(l.Sessid)},
+		},
+		ConditionExpression: aws.String("username = :u"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":u": {S: aws.String(l.Username)},
+		},
+	})
+
 	return err
 }

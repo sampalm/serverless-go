@@ -39,10 +39,10 @@ func ItemToChat(item map[string]*dynamodb.AttributeValue) Chat {
 	txi := item["text"]
 
 	return Chat{
-		DateID:   dti.GoString(),
+		DateID:   *(dti.S),
 		Time:     DBtoTime(tmi.N),
-		Username: uni.GoString(),
-		Text:     txi.GoString(),
+		Username: *(uni.S),
+		Text:     *(txi.S),
 	}
 }
 
