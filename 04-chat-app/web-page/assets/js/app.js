@@ -1,5 +1,4 @@
 const api = "https://api.sampalm.com/";
-sessid = undefined;
 lastchat = undefined;
 
 function qfetch(lambdaName, data, method="POST"){
@@ -28,7 +27,7 @@ function NewUser(){
     qfetch("ch_new_user", {Username:uname, Password:pass})
     .then(function(res){
         if(res.Value != 200){
-            AddtoChat("Error: "+res.Description);
+            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
             return
         }
         AddtoChat(res.Description);
@@ -43,43 +42,35 @@ function Login(){
     qfetch("ch_login", {Username: uname, Password: pass})
     .then(function(res){
         if(res.Value != 200){
-            AddtoChat("Error: "+res.Description);
+            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
             return
         }
         AddtoChat(res.Description);
-        sessid = res.Sessid; 
-        AddtoChat("You are online now!")
-
-        document.getElementById("loggin").style.display = "none";
-        document.getElementById("logged").style.display = "block";
-
+        document.cookie = "sessid="+res.Sessid; 
+        toogleBtn();
         ReadChat();
     });
 }
 
 function Logout(){
     let uname = document.getElementById("lg-username").value;
-    qfetch("ch_logout", {Username: uname, Sessid: sessid}, "DELETE")
+    qfetch("ch_logout", {Username: uname, Sessid: getCookie()}, "DELETE")
     .then(function(res){
         if(res.Value != 200){
-            AddtoChat("Error: "+res.Description);
-            console.log(JSON.stringify(res))
+            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
             return
         }
         AddtoChat(res.Description);
-        sessid = undefined; 
-        AddtoChat("You are logged out now!")
-
-        document.getElementById("loggin").style.display = "block";
-        document.getElementById("logged").style.display = "none";
+        document.cookie = "sessid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; 
+        toogleBtn(false);
     });
 }
 
 function ReadChat(){
-    if (sessid === undefined){
+    if (getCookie() === undefined){
         return
     }
-    let dt = {Sessid: sessid};
+    let dt = {Sessid: getCookie()};
     if (lastchat !== undefined) {
         dt.LastID = lastchat.DateID
         dt.LastTime = lastchat.Time
@@ -88,7 +79,7 @@ function ReadChat(){
     qfetch("ch_get_message", dt)
     .then(function(res){
         if(res.Value != 200){
-            AddtoChat("Error: "+res.Description);
+            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
             return
         }
         if(res.Chats !== undefined){
@@ -103,8 +94,8 @@ function ReadChat(){
 }
 
 function Say(){
-    if(sessid === undefined){
-        AddtoChat("Not Logged In")
+    if(getCookie() === undefined){
+        AddtoChat("<span class='msg-error'>Not Logged In!</span>")
         return
     }
     let txt = document.getElementById("ch-text").value;
@@ -112,22 +103,52 @@ function Say(){
         return;
     }
 
-    qfetch("ch_message", {Sessid: sessid, Text: txt})
+    qfetch("ch_message", {Sessid: getCookie(), Text: txt})
     .then(function(res){
         if(res.Value != 200){
-            AddtoChat("Error: "+res.Description);
+            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
             return
         }
     })
 }
 
+function toogleBtn(on=true){
+    if (on) {
+        AddtoChat("You are online now!")
+
+        document.getElementById("loggin").style.display = "none";
+        document.getElementById("logged").style.display = "block";
+        return;
+    }
+    AddtoChat("You are logged out!");
+
+    document.getElementById("loggin").style.display = "block";
+    document.getElementById("logged").style.display = "none";
+}
+
+function getCookie(){
+    return decodeURIComponent(document.cookie).split("sessid=")[1] !== undefined ? 
+    decodeURIComponent(document.cookie).split("sessid=")[1].substring(0,40) :
+    undefined;
+}
+
+(function(){
+    console.log("CookieState: "+getCookie());
+    if (getCookie() !== undefined){
+        toogleBtn();
+        ReadChat();
+        return;
+    }
+    toogleBtn(false);
+})();
+
 // Update chat message
 setInterval(function(){
-    if (sessid !== undefined){
-        qfetch("ch_get_message", {Sessid: sessid})
+    if (getCookie() !== undefined){
+        qfetch("ch_get_message", {Sessid: getCookie()})
         .then(function(res){
             if(res.Value != 200){
-                console.log("Error: "+res.Description);
+                console.log("<span class='msg-error'>Error: "+res.Description+"</span>");
                 return
             }
             if(res.Chats !== undefined){
@@ -159,7 +180,11 @@ for (let b in buttons) {
                 NewUser();
                 break;
             case ("ch-send"):
+                this.disabled = true;
+                this.value = "Sending  "
+                this.classList.add("loading", "btn-pd");
                 Say();
+                setTimeout(()=>{this.value = "Send Message"; this.disabled = false; this.classList.remove("btn-pd", "loading");}, 2000);
                 break;
             default:
                 return;

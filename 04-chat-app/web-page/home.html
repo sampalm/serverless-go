@@ -26,7 +26,7 @@
 			#chat-box p {
 				margin: 0px;
 			}
-			#logged {
+			#logged, #loggin {
 				display: none;
 			}
 			.chat-txt {
@@ -40,6 +40,20 @@
 				color: #878787;
 				line-height: 0px;
 				float: right;
+			}
+			.loading {
+				background-image: url(images/load.gif);
+				background-size: 25px;
+				background-repeat: no-repeat;
+				background-position-y: center;
+				background-position-x: 90%;
+			}
+			.btn-pd {
+				padding-right: 30px !important;
+				padding-left: 20px !important;
+			}
+			.msg-error {
+				color: #d11515 !important;
 			}
 		</style>
 </head>
@@ -80,7 +94,7 @@
 				</header>
 				<p>
 					Welcome to my personal page!<br>
-					In this page I will post my experiments and projects that I'm working with. Today's project is a <b>serverless chat</b> that was made using some AWS Services.
+					In this page I will post my experiments and projects that I'm working with. <br><b>Serverless Chat</b> is a serverless app that was made using some AWS Services.
 					<ul>
 						<li>AWS API Gateway</li>
 						<li>AWS Simple Storage Service (S3)</li>
