@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<!--
+	Astral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+	<title>Sam Palm Page</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	<style>
+		#chat-box {
+				width: 100%;
+				height: 350px;
+				background-color: rgb(244, 244, 244);
+				overflow-y: scroll;
+				color: #000;
+				padding: 5px;
+			}
+			#chat-box p {
+				margin: 0px;
+			}
+			#logged {
+				display: none;
+			}
+			.chat-txt {
+				padding-bottom: 0px;
+				margin-bottom: -22px;
+			}
+			.chat-time {
+				font-style: italic;
+				font-size: 12px;
+				margin-top: -6px;
+				color: #878787;
+				line-height: 0px;
+				float: right;
+			}
+		</style>
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper-->
+	<div id="wrapper">
+
+		<!-- Nav -->
+		<nav id="nav">
+			<a href="#" class="icon fa-home"><span>Home</span></a>
+			<a href="#work" class="icon fa-folder"><span>Work</span></a>
+			<a href="#chat" class="icon fa-envelope"><span>Chat</span></a>
+			<a target="_blank" href="https://twitter.com/sampalmgo" class="icon fa-twitter"><span>Twitter</span></a>
+			<a target="_blank" href="https://www.linkedin.com/in/samuel-palmeira-69a82a11b/" class="icon fa-linkedin"><span>Linkedin</span></a>
+		</nav>
+
+		<!-- Main -->
+		<div id="main">
+
+			<!-- Me -->
+			<article id="home" class="panel intro">
+				<header>
+					<h1>Samuel Palmeira</h1>
+					<p>Backend Developer | AWS Developer Certified | Gopher </p>
+				</header>
+				<a href="#work" class="jumplink pic">
+					<span class="arrow icon fa-chevron-right"><span>See my work</span></span>
+					<img src="images/me.jpg" alt="" />
+				</a>
+			</article>
+
+			<!-- Work -->
+			<article id="work" class="panel">
+				<header>
+					<h1>Works</h1>
+				</header>
+				<p>
+					Welcome to my personal page!<br>
+					In this page I will post my experiments and projects that I'm working with. Today's project is a <b>serverless chat</b> that was made using some AWS Services.
+					<ul>
+						<li>AWS API Gateway</li>
+						<li>AWS Simple Storage Service (S3)</li>
+						<li>AWS Lambda</li>
+						<li>AWS DynamoDB</li>
+						<li>AWS CloudFront</li>
+					</ul>
+					<p>All of them are using only the AWS Free Tier therefore I'm not paying anything until I exceed this limit, you can see more information about it <a href="https://aws.amazon.com/pt/free/" target="_blank">here</a>. The
+						objective of this project is to discover what can be done with the AWS Services without spending much money or
+						any money at all.</p>
+					<p>To fulfill this project I'm using some programming languages, in the front-end I'm using a pre-made template made with HTML5, CSS and SASS, I did not made the template so I could focus only on the core of the project which is the back-end. At the back-end I'm using <b>GO</b> to develop all <b>Lambda</b> functions that I used to call other AWS services like <b>DynamoDB</b> and some others that I will implement in the future, also <b>Javascript</b> to call my <b>Lambda</b> functions and that's it. To host this web page I'm using a <b>S3</b> bucket as a static host and <b>CloudFront</b> to certify and optimize my domain from <b>Google Domains</b> that I already had so I'm re-using it to save me some money.</p>
+				</p>
+				<section>
+					<!-- <div class="row">
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic01.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic02.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic03.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic04.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic05.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic06.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic07.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic08.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic09.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic10.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic11.jpg" alt=""></a>
+										</div>
+										<div class="col-4 col-6-medium col-12-small">
+											<a href="#" class="image fit"><img src="images/pic12.jpg" alt=""></a>
+										</div>
+									</div> -->
+				</section>
+			</article>
+
+			<!-- chat -->
+			<article id="chat" class="panel">
+				<header>
+					<h2>Serverless Chat</h2>
+				</header>
+				<form action="#" method="post" name="0" id="0">
+					<div>
+						<div class="row">
+							<div class="col-12" id="loggin">
+								<div class="row">
+								<div class="col-6 col-12-medium">
+									<input type="text" id="lg-username" name="name" placeholder="Username" />
+								</div>
+								<div class="col-6 col-12-medium">
+									<input type="password" id="lg-pass" name="password" placeholder="Password" />
+								</div>
+								<div class="col-6 col-12-medium">
+								<input style="padding: 0.3em 1em; background-color: #9f6b7b;" type="button" name="lg-user" value="Log In" />
+								<input style="padding: 0.3em 1em; background-color: #fff; border: 1px solid #8e607a; color: #8e607a;" type="button"
+								 name="new-user" value="Create User" />
+								 </div>
+								</div>
+							</div>
+							<div class="col-12" id="logged">
+								<input style="padding: 0.3em 1em; background-color: #9f6b7b;" type="button" name="lg-out" value="Log Out" />
+							</div>
+							<div class="col-12">
+								<input type="text" id="ch-text" name="message" placeholder="Say something..." />
+							</div>
+							<div class="col-12">
+								<div id="chat-box" name="message" rows="6"></div>
+							</div>
+							<div class="col-12">
+								<input id="ch-send" name="ch-send" type="button" value="Send Message" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</article>
+
+		</div>
+
+		<!-- Footer -->
+		<div id="footer">
+			<ul class="copyright">
+				<li>&copy; Sam Palm.</li>
+				<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+			</ul>
+		</div>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+	<script src="assets/js/app.js"></script>
+</body>
+
+</html>
