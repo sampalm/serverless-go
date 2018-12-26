@@ -34,6 +34,16 @@ func (u User) Put(sess *session.Session) error {
 	return err
 }
 
+func (u User) Validate(passw string) error {
+	if len(u.Username) < 3 {
+		return fmt.Errorf("Invalid username.")
+	}
+	if len(passw) < 6 {
+		return fmt.Errorf("Invalid password too small.")
+	}
+	return nil
+}
+
 func GetDBUser(uname string, sess *session.Session) (User, error) {
 	cdb := dynamodb.New(sess)
 	dbu, err := cdb.GetItem(&dynamodb.GetItemInput{

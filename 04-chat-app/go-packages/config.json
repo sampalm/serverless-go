@@ -1,0 +1,5 @@
+{
+	"Name":"Chat",
+	"Bucket":"www.sampalm.com",
+	"Role":"arn:aws:iam::487676984512:role/chat"
+}

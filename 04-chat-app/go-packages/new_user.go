@@ -27,6 +27,9 @@ func handler(ctx context.Context, ev Event) (Response, error) {
 	}
 
 	u := chatsess.NewUser(ev.Username, ev.Password)
+	if err := u.Validate(ev.Password); err != nil {
+		return Response{Value: 403, Description: err.Error()}, nil
+	}
 	if err := u.Put(sess); err != nil {
 		return Response{Value: 500, Description: "Could not add to database: " + err.Error()}, nil
 	}
