@@ -56,11 +56,6 @@ function Logout(){
     let uname = document.getElementById("lg-username").value;
     qfetch("ch_logout", {Username: uname, Sessid: getCookie()}, "DELETE")
     .then(function(res){
-        if(res.Value != 200){
-            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
-            return
-        }
-        AddtoChat(res.Description);
         document.cookie = "sessid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; 
         toogleBtn(false);
     });
@@ -110,6 +105,28 @@ function Say(){
             return
         }
     })
+}
+
+function Translate() {
+    let txt = document.getElementById("ch-text");
+    let src = document.getElementById("ch-src").value;
+    let tg = document.getElementById("ch-tg").value;
+    if (txt === ""){
+        return;
+    }
+    if (getCookie() === undefined){
+        AddtoChat("<span class='msg-error'>Not Logged In!</span>")
+        return;
+    }
+    console.log("translating...")
+    qfetch("ch_translate", {Sessid: getCookie(), Source: src, Target: tg, Text: txt.value})
+    .then(function(res){
+        if(res.Value != 200){
+            AddtoChat("<span class='msg-error'>Error: "+res.Description+"</span>");
+            return
+        }
+        txt.value = res.Body;
+    });
 }
 
 function toogleBtn(on=true){
@@ -185,6 +202,13 @@ for (let b in buttons) {
                 this.classList.add("loading", "btn-pd");
                 Say();
                 setTimeout(()=>{this.value = "Send Message"; this.disabled = false; this.classList.remove("btn-pd", "loading");}, 2000);
+                break;
+            case ("ch-tl"):
+                this.disabled = true;
+                this.value = "Translating  "
+                this.classList.add("loading", "btn-pd");
+                Translate();
+                setTimeout(()=>{this.value = "Translate Message"; this.disabled = false; this.classList.remove("btn-pd", "loading");}, 2000);
                 break;
             default:
                 return;
