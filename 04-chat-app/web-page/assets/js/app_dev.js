@@ -149,6 +149,32 @@ function getCookie(){
     undefined;
 }
 
+function listBucket(){
+    if (getCookie() !== undefined){
+        qfetch("ch_list_bucket", {Sessid: getCookie()})
+        .then(function(res){
+            if(res.Value != 200){
+                console.log(res.Description)
+                return
+            }
+            let tb = document.getElementById("files-list");
+            tb.innerHTML = "";
+            for(let file of res.Body){
+                let tr = document.createElement("tr");
+                let ln = `<td>${file.Key}</td>`;
+                ln += `<td>${file.Size}</td>`;
+                ln += `<td class="file-download" onclick="getObject('${file.Key}')"><i class="fas fa-cloud-download-alt"></i></td>`;
+                tr.innerHTML = ln;
+                tb.appendChild(tr);
+            }    
+        })
+    }
+}
+
+function getObject(file){
+// DO SOMETHING
+}
+
 (function(){
     console.log("CookieState: "+getCookie());
     if (getCookie() !== undefined){
@@ -165,7 +191,7 @@ setInterval(function(){
         qfetch("ch_get_message", {Sessid: getCookie()})
         .then(function(res){
             if(res.Value != 200){
-                console.log("<span class='msg-error'>Error: "+res.Description+"</span>");
+                console.log(res.Description);
                 return
             }
             if(res.Chats !== undefined){

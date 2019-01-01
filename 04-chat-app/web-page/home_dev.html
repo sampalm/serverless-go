@@ -10,6 +10,7 @@
 	<title>Sam Palm Page</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 	<link rel="stylesheet" href="assets/css/main.css" />
 	<link rel="shortcut icon" type="image/png" href="images/favico.png"/>
 	<noscript>
@@ -97,6 +98,7 @@
 			<a href="#" class="icon fa-home"><span>Home</span></a>
 			<a href="#work" class="icon fa-folder"><span>Works</span></a>
 			<a href="#chat" class="icon fa-envelope"><span>Chat</span></a>
+			<a href="#files" class="icon fa-file" onclick="listBucket()"><span>Files</span></a>
 			<a target="_blank" href="https://twitter.com/sampalmgo" class="icon fa-twitter"><span>Twitter</span></a>
 			<a target="_blank" href="https://github.com/sampalm" class="icon fa-github"><span>Github</span></a>
 			<a target="_blank" href="https://www.linkedin.com/in/samuel-palmeira-69a82a11b/" class="icon fa-linkedin"><span>Linkedin</span></a>
@@ -206,6 +208,29 @@
 						</div>
 					</div>
 				</form>
+			</article>
+
+			<!-- files -->
+			<article id="files" class="panel">
+				<header>
+					<h2>Your Files</h2>
+				</header>
+				<div class="row">
+					<div class="col-12">
+						<table>
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Size</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody id="files-list">
+								
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</article>
 
 		</div>
