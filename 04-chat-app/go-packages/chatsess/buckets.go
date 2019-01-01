@@ -1,8 +1,11 @@
 package chatsess
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -10,14 +13,19 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-const BUCKET = "s3://bucketname"
+const BUCKET = "public.sampalm.com"
 
-func ListObjects(username string, sess *session.Session) ([]*s3.Object, error) {
+type Object struct {
+	Key  string
+	Size int64
+}
+
+func ListObjects(username string, sess *session.Session) ([]Object, error) {
 	cs3 := s3.New(sess)
 
 	res, err := cs3.ListObjects(&s3.ListObjectsInput{
 		Bucket: aws.String(BUCKET),
-		Prefix: aws.String(fmt.Sprintf("/public-files/%s/", username)),
+		Prefix: aws.String(fmt.Sprintf("%s/", username)),
 	})
 
 	if err != nil {
@@ -31,8 +39,46 @@ func ListObjects(username string, sess *session.Session) ([]*s3.Object, error) {
 		} else {
 			log.Println(err.Error())
 		}
-		return []*s3.Object{}, err
+		return []Object{}, err
 	}
+	log.Println("Response Body:\n", res.Contents)
+	keys := []Object{}
+	for _, v := range res.Contents {
+		s := strings.SplitN(*(v.Key), "/", 2)[1]
+		if s == "" {
+			continue
+		}
+		keys = append(keys, Object{Key: s, Size: *(v.Size)})
+	}
+	return keys, nil
+}
 
-	return res.Contents, nil
+func DownloadObject(username, filename string, sess *session.Session) (ContentType, Body string, err error) {
+	cs3 := s3.New(sess)
+	res, err := cs3.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(BUCKET),
+		Key:    aws.String(fmt.Sprintf("%s/%s", username, filename)),
+	})
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case s3.ErrCodeNoSuchBucket:
+				log.Println(s3.ErrCodeNoSuchBucket, aerr.Error())
+			default:
+				log.Println(aerr.Error())
+			}
+		} else {
+			log.Println(err.Error())
+		}
+		return "", "", err
+	}
+	log.Println("Response Metadata:\n", res.Metadata, res.VersionId, res.ContentType)
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err.Error())
+		return "", "", err
+	}
+	ef := base64.StdEncoding.EncodeToString(body)
+	return *(res.ContentType), ef, nil
 }
