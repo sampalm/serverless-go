@@ -1,0 +1,105 @@
+body {
+    background: radial-gradient(circle, rgba(0,202,255,1) 5%, rgba(68,161,210,1) 64%, rgba(68,178,210,1) 98%) !important;
+}
+#chat-box {
+    width: 100%;
+    height: 350px;
+    background-color: rgb(244, 244, 244);
+    overflow-y: scroll;
+    color: #000;
+    padding: 5px;
+}
+#chat-box p {
+    margin: 0px;
+}
+#logged, #loggin {
+    display: none;
+}
+#chat-form h4 {
+    padding-left: 35px;
+}
+#chat-form label {
+    display: block;
+    font-weight: 400;
+    color: #aaa;
+    margin: 0 0 1em 0;
+    font-weight: lighter;
+    font-size: 20px;
+    margin-bottom: 0;
+}
+#ch-send {
+    background-color: #222222e6 !important;
+}
+#ch-tl {
+    background-color: #2096d4 !important;
+}
+.btn-action {
+    background-color: #2096d4 !important;
+}
+.btn-signup {
+    border: 1px solid #2096d4 !important;
+    background-color: #fff !important;
+    color: #2096d4 !important;
+}
+.chat-txt {
+    padding-bottom: 0px;
+    margin-bottom: -22px;
+}
+.chat-time {
+    font-style: italic;
+    font-size: 12px;
+    margin-top: -6px;
+    color: #878787;
+    line-height: 0px;
+    float: right;
+}
+.loading {
+    background-image: url(images/load.gif);
+    background-size: 25px;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position-x: 90%;
+}
+.btn-pd {
+    padding-right: 30px !important;
+    padding-left: 20px !important;
+}
+.msg-error {
+    color: #d11515 !important;
+}
+#files table {
+    display: none;
+}
+#files table thead {
+    border-bottom: 1px solid #0000001a;
+    background-color: #f9f9f9;
+    color: #969696;
+    font-size: 0.9em;
+}
+#files table tbody {
+    font-size: 0.7em;
+}
+.file-download {
+    cursor: pointer;
+}
+.warning {
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
+    font-size: 0.7em;
+}
+.warning a {
+    color: #a2a2a2;
+    text-decoration: none;
+}
+.warning-error {
+    background-color: #db6f6fe6;
+    color: white;
+}
+.warning-alert {
+    background-color: #f3f3f3e6;
+    color: #a2a2a2;
+}
+.center-text {
+    text-align: center;
+}
