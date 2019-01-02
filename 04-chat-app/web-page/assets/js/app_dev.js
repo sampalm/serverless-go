@@ -163,16 +163,66 @@ function listBucket(){
                 let tr = document.createElement("tr");
                 let ln = `<td>${file.Key}</td>`;
                 ln += `<td>${file.Size}</td>`;
-                ln += `<td class="file-download" onclick="getObject('${file.Key}')"><i class="fas fa-cloud-download-alt"></i></td>`;
+                ln += `<td class="file-download"><i class="fas fa-cloud-download-alt" data-foo="${file.Key}"></i></td>`;
                 tr.innerHTML = ln;
                 tb.appendChild(tr);
-            }    
+            }  
+            document.body.addEventListener("click", function loader(e){
+                if(e.srcElement.hasAttribute("data-foo")){
+                    let filename = e.srcElement.getAttribute("data-foo");
+                    console.log("Downloading...")
+                    e.srcElement.removeAttribute("data-foo");
+                    getObject(filename);
+                    setTimeout(()=>(e.srcElement.setAttribute("data-foo", filename)), 5000)
+                }
+            }, false);
         })
     }
 }
 
+function base64ToArrayBuffer(data) {
+    var binaryString = window.atob(data);
+    var binaryLen = binaryString.length;
+    var bytes = new Uint8Array(binaryLen);
+    for (var i = 0; i < binaryLen; i++) {
+        var ascii = binaryString.charCodeAt(i);
+        bytes[i] = ascii;
+    }
+    return bytes;
+}
+
 function getObject(file){
-// DO SOMETHING
+    if(!getCookie()){
+        return;
+    }
+    qfetch("ch_get_obj", {SessID: getCookie(), Filename: file})
+    .then(function(res) {
+        if(res.Value !== 200){
+            console.log(res.Description)
+            return
+        }
+        var arrBuffer = base64ToArrayBuffer(res.Body);
+        let blob = new Blob([arrBuffer], {type: res.ContentType});
+        let filename = file.split('\\').pop().split('/').pop();
+        saveFile(blob, filename)
+    })
+}
+
+function saveFile(blob, filename) {
+    if (window.navigator.msSaveOrOpenBlob) {
+      window.navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      const url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = filename;
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 0)
+    }
 }
 
 (function(){
@@ -209,10 +259,10 @@ setInterval(function(){
     }
 }, 1500);
 let buttons = document.querySelectorAll("input[type=button]"); 
-for (let b in buttons) { 
-    buttons[b].onclick = function(e){
+for (let b of buttons) { 
+    b.onclick = function(e){
         e.preventDefault;
-        switch(buttons[b].name){
+        switch(b.name){
             case ("lg-user"):
                 Login();
                 break;
