@@ -1,6 +1,7 @@
 package chatsess
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -18,6 +19,7 @@ const BUCKET = "public.sampalm.com"
 type Object struct {
 	Key  string
 	Size int64
+	Body []byte
 }
 
 func ListObjects(username string, sess *session.Session) ([]Object, error) {
@@ -51,6 +53,32 @@ func ListObjects(username string, sess *session.Session) ([]Object, error) {
 		keys = append(keys, Object{Key: s, Size: *(v.Size)})
 	}
 	return keys, nil
+}
+
+func CreateUserFolder(username string, sess *session.Session) error {
+	cs3 := s3.New(sess)
+	_, err := cs3.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(BUCKET),
+		Key:    aws.String(fmt.Sprintf("%s/welcome.txt", username)),
+		Body:   bytes.NewReader([]byte(fmt.Sprintf("Welcome %s!\nThis is your bucket, all of your items will be stored here.", username))),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj Object) Put(sess *session.Session) error {
+	cs3 := s3.New(sess)
+	_, err := cs3.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(BUCKET),
+		Key:    aws.String(obj.Key),
+		Body:   bytes.NewReader(obj.Body),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func DownloadObject(username, filename string, sess *session.Session) (ContentType, Body string, err error) {
