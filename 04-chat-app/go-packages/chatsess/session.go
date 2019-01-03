@@ -3,6 +3,7 @@ package chatsess
 import (
 	"crypto/rand"
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -42,12 +43,14 @@ func GetLogin(id string, sess *session.Session) (Login, error) {
 }
 
 func (l Login) Put(sess *session.Session) error {
+	ttl := TimetoDB(time.Now().Local().Add(time.Minute * time.Duration(60)))
 	cdb := dynamodb.New(sess)
 	_, err := cdb.PutItem(&dynamodb.PutItemInput{
 		TableName: aws.String("ch_sessions"),
 		Item: map[string]*dynamodb.AttributeValue{
 			"sessid":   {S: aws.String(l.Sessid)},
 			"username": {S: aws.String(l.Username)},
+			"expire":   {S: ttl},
 		},
 	})
 	return err
