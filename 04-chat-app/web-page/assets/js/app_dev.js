@@ -196,7 +196,11 @@ function listBucket() {
                 let tr = document.createElement("tr");
                 let ln = `<td>${file.Key}</td>`;
                 ln += `<td class="center-text">${file.Size}KB</td>`;
-                ln += `<td class="center-text file-download"><i class="fas fa-cloud-download-alt" data-foo="${file.Key}"></i></td>`;
+                ln += `<td class="center-text file-download"><i class="fas fa-cloud-download-alt" data-foo="${file.Key}"></i>`;
+                if (file.Key.split(".").pop() === "mp3"){
+                    ln += `<i class="fas fa-play-circle play" id="${file.Key.hashCode()}" data-foo="${file.Key}"></i>`;
+                }
+                ln += "</td>";
                 tr.innerHTML = ln;
                 tb.appendChild(tr);
             }
@@ -204,13 +208,30 @@ function listBucket() {
                 if (e.srcElement.hasAttribute("data-foo")) {
                     let filename = e.srcElement.getAttribute("data-foo");
                     e.srcElement.removeAttribute("data-foo");
+                    if (e.srcElement.classList.contains("play")) {
+                        getObject(filename, "play");
+                        e.srcElement.setAttribute("data-foo", filename)
+                        return;
+                    }
                     getObject(filename);
                     setTimeout(() => (e.srcElement.setAttribute("data-foo", filename)), 5000)
+                    return;
                 }
             }, false);
         })
 }
 
+
+String.prototype.hashCode = function() {
+    var hash = 0, i, chr;
+    if (this.length === 0) return hash;
+    for (i = 0; i < this.length; i++) {
+      chr   = this.charCodeAt(i);
+      hash  = ((hash << 5) - hash) + chr;
+      hash |= 0;
+    }
+    return hash;
+};
 function base64ToArrayBuffer(data) {
     var binaryString = window.atob(data);
     var binaryLen = binaryString.length;
@@ -222,7 +243,8 @@ function base64ToArrayBuffer(data) {
     return bytes;
 }
 
-function getObject(file) {
+let lastAudioID = undefined;
+function getObject(file, action="download") {
     if (!getCookie()) {
         return;
     }
@@ -230,13 +252,39 @@ function getObject(file) {
         .then(function (res) {
             if (res.Value !== 200) {
                 console.log(res.Description)
-                return
+                return;
             }
             var arrBuffer = base64ToArrayBuffer(res.Body);
             let blob = new Blob([arrBuffer], { type: res.ContentType });
             let filename = file.split('\\').pop().split('/').pop();
-            saveFile(blob, filename)
-        })
+            if (action === "play") {
+                let fid = filename.hashCode();
+                let audioplayer = document.getElementById("="+fid);
+                let audiobtn = document.getElementById(fid);
+                if(audioplayer){
+                    if(audioplayer.paused){
+                        audiobtn.classList.remove("fa-play-circle");
+                        audiobtn.classList.add("fa-pause-circle");
+                        audioplayer.play()
+                        return;
+                    }
+                    audiobtn.classList.add("fa-play-circle");
+                    audiobtn.classList.remove("fa-pause-circle");
+                    audioplayer.pause();
+                    return;
+                }
+                if (lastAudioID !== undefined) {
+                    audiobtn = document.getElementById(lastAudioID);
+                    audiobtn.classList.add("fa-play-circle");
+                    audiobtn.classList.remove("fa-pause-circle");
+                    lastAudioID = undefined;
+                }
+                playFile(blob, filename)
+                return;
+            }
+            saveFile(blob, filename);
+            return; 
+    });
 }
 
 function saveFile(blob, filename) {
@@ -254,6 +302,23 @@ function saveFile(blob, filename) {
             document.body.removeChild(a);
         }, 0)
     }
+}
+
+function playFile(blob, filename) {
+    let audiobtn = document.getElementById(filename.hashCode());
+    const a = document.querySelector("audio") || document.createElement('audio');
+    document.body.appendChild(a);
+    const url = window.URL.createObjectURL(blob);
+    a.type = blob.type;
+    a.src = url;
+    a.id = "="+filename.hashCode();
+    a.play();
+    a.onended = function() {
+        audiobtn.classList.add("fa-play-circle");
+        audiobtn.classList.remove("fa-pause-circle");
+    }
+    audiobtn.classList.add("fa-pause-circle");
+    lastAudioID = filename.hashCode();
 }
 
 (function () {
