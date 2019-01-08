@@ -21,31 +21,31 @@ function AddtoChat(txt) {
 
 function NewUser() {
     let uname = document.getElementById("lg-username").value;
-    AddtoChat("Creating User: " + uname);
     let pass = document.getElementById("lg-pass").value;
+    if (uname.length === 0 || pass.length === 0) {errorToHtml("chat", "Invalid user or password", "error"); return;}
 
     qfetch("ch_new_user", { Username: uname, Password: pass })
         .then(function (res) {
             if (res.Value != 200) {
-                AddtoChat("<span class='msg-error'>Error: " + res.Description + "</span>");
+                errorToHtml("chat", res.Description, "error")
                 return
             }
-            AddtoChat(res.Description);
+            errorToHtml("chat", res.Description, "info")
         });
 }
 
 function Login() {
     let uname = document.getElementById("lg-username").value;
-    AddtoChat("Log in User: " + uname);
     let pass = document.getElementById("lg-pass").value;
+    if (uname.length === 0 || pass.length === 0) {errorToHtml("chat", "Invalid user or password", "error"); return;}
 
     qfetch("ch_login", { Username: uname, Password: pass })
         .then(function (res) {
             if (res.Value != 200) {
-                AddtoChat("<span class='msg-error'>Error: " + res.Description + "</span>");
+                errorToHtml("chat", res.Description, "error")
                 return
             }
-            AddtoChat(res.Description);
+            errorToHtml("chat", res.Description, "info")
             document.cookie = "sessid=" + res.Sessid;
             toogleBtn();
             ReadChat();
@@ -148,14 +148,22 @@ function getCookie() {
         undefined;
 }
 
-function errorToHtml(id, error, type) {
+function errorToHtml(id, error, type, persist=false) {
     removeErrors();
-    let selector = type === "error" ? `#${id}` : type === "alert" ? `#${id} .col-12` : `#${id}`;
+    let selector = type === "error" ? 
+    `#${id}` : type === "alert" ?
+     `#${id} .col-12` : type === "info" ?
+     `#${id}` : `#${id}`;
     let div = document.querySelector(selector);
     let p = document.createElement("p");
     p.className = "warning warning-" + type;
     p.innerHTML = error;
     div.insertAdjacentElement("afterbegin", p)
+    if(persist) return;
+    setTimeout(function(){
+        p.classList.add("fade");
+        setTimeout(removeErrors, 500)
+    }, 2000);
 }
 function removeErrors() {
     let old = document.getElementsByClassName("warning");
@@ -173,7 +181,7 @@ function listBucket() {
     if (getCookie() === undefined) {
         table.style.display = "none";
         removeTablesResults();
-        errorToHtml("files", "You must be <a href='#chat'>logged in</a> to see your files.", "alert");
+        errorToHtml("files", "You must be <a href='#chat'>logged in</a> to see your files.", "alert", true);
         return
     }
     removeErrors();
@@ -359,13 +367,19 @@ for (let b of buttons) {
         e.preventDefault;
         switch (b.name) {
             case ("lg-user"):
+                this.disabled = true;
+                errorToHtml("chat", "Log in to your account", "info")
                 Login();
+                setTimeout(() => (this.disabled = false), 2000);
                 break;
             case ("lg-out"):
                 Logout();
                 break;
             case ("new-user"):
+                this.disabled = true;
+                errorToHtml("chat", "Creating new user", "info")
                 NewUser();
+                setTimeout(() => (this.disabled = false), 2000);
                 break;
             case ("ch-send"):
                 this.disabled = true;
