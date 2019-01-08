@@ -54,7 +54,7 @@ body {
     float: right;
 }
 .loading {
-    background-image: url(images/load.gif);
+    background-image: url(../../images/load.gif) !important;
     background-size: 25px;
     background-repeat: no-repeat;
     background-position-y: center;
@@ -93,7 +93,8 @@ body {
     text-align: center;
     width: 50%;
     margin: 0 auto;
-    font-size: 0.7em;
+    font-size: 0.85em;
+    margin-bottom: 10px;
 }
 .warning a {
     color: #a2a2a2;
@@ -107,6 +108,24 @@ body {
     background-color: #f3f3f3e6;
     color: #a2a2a2;
 }
+.warning-info {
+    background-color: #3ba7d8b3;
+    color: #fff;
+}
 .center-text {
     text-align: center;
+}
+.fade {
+    -webkit-transition: opacity 500ms linear;
+    opacity: 0;
+}
+@media only screen and (max-width: 488px) {
+    #nav a {
+        width: 25px;
+    }
+}
+@media only screen and (max-width: 384px) {
+    #nav a {
+        width: 6%;
+    }
 }
