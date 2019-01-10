@@ -1,5 +1,5 @@
 const api = "https://api.sampalm.com/";
-lastchat = undefined;
+let lastchat = undefined;
 
 function qfetch(lambdaName, data, method = "POST") {
     return fetch(api + lambdaName, {
@@ -54,6 +54,7 @@ function Login() {
 
 function Logout() {
     let uname = document.getElementById("lg-username").value;
+    errorToHtml("chat", "You are being logged out", "info");
     qfetch("ch_logout", { Username: uname, Sessid: getCookie() }, "DELETE")
         .then(function (res) {
             document.cookie = "sessid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
@@ -78,12 +79,11 @@ function ReadChat() {
                 return
             }
             if (res.Chats !== undefined) {
-                for (let c in res.Chats) {
-                    let ch = res.Chats[c];
-                    AddtoChat("<b>" + ch.Username + "</b> says:");
-                    AddtoChat("<span class='chat-txt'>" + ch.Text + "</span>" + "<i class='chat-time'>" + ch.Time + "</i>");
-                    lastchat = ch;
-                }
+                res.Chats.map(chat => {
+                    AddtoChat(`<b>${chat.Username}</b> says:\n
+                    <span class="chat-txt">${chat.Text}</span><i class="chat-time">${chat.Time}</i>`);
+                    lastchat = chat;
+                })
             }
         })
 }
@@ -162,7 +162,7 @@ function errorToHtml(id, error, type, persist=false) {
     if(persist) return;
     setTimeout(function(){
         p.classList.add("fade");
-        setTimeout(removeErrors, 500)
+        setTimeout(p.remove(), 500)
     }, 2000);
 }
 function removeErrors() {
@@ -200,18 +200,15 @@ function listBucket() {
             table.style.display = "table";
             let tb = document.getElementById("files-list");
             tb.innerHTML = "";
-            for (let file of res.Body) {
+            res.Body.map(file => {
                 let tr = document.createElement("tr");
-                let ln = `<td>${file.Key}</td>`;
-                ln += `<td class="center-text">${file.Size}KB</td>`;
-                ln += `<td class="center-text file-download"><i class="fas fa-cloud-download-alt" data-foo="${file.Key}"></i>`;
-                if (file.Key.split(".").pop() === "mp3"){
-                    ln += `<i class="fas fa-play-circle play" id="${file.Key.hashCode()}" data-foo="${file.Key}"></i>`;
-                }
-                ln += "</td>";
+                let ln = `<td>${file.Key}</td>
+                <td class="center-text">${file.Size}KB</td>
+                <td class="center-text file-download"><i class="fas fa-cloud-download-alt" data-foo="${file.Key}"></i>
+                ${file.Key.split(".").pop() === "mp3" ? `<i class="fas fa-play-circle play" id="${file.Key.hashCode()}" data-foo="${file.Key}"></i></td>` : '</td>'}`;
                 tr.innerHTML = ln;
                 tb.appendChild(tr);
-            }
+            });
             document.body.addEventListener("click", function loader(e) {
                 if (e.srcElement.hasAttribute("data-foo")) {
                     let filename = e.srcElement.getAttribute("data-foo");
@@ -370,7 +367,7 @@ for (let b of buttons) {
                 this.disabled = true;
                 errorToHtml("chat", "Log in to your account", "info")
                 Login();
-                setTimeout(() => (this.disabled = false), 2000);
+                setTimeout(() => this.disabled = false, 2000);
                 break;
             case ("lg-out"):
                 Logout();
@@ -379,26 +376,32 @@ for (let b of buttons) {
                 this.disabled = true;
                 errorToHtml("chat", "Creating new user", "info")
                 NewUser();
-                setTimeout(() => (this.disabled = false), 2000);
+                setTimeout(() => this.disabled = false, 2000);
                 break;
             case ("ch-send"):
-                this.disabled = true;
-                this.value = "Sending  "
-                this.classList.add("loading", "btn-pd");
+                this._lockButton("Sending ");
                 Say();
-                setTimeout(() => { this.value = "Send Message"; this.disabled = false; this.classList.remove("btn-pd", "loading"); }, 2000);
+                setTimeout(() => this._unlockButton("Send Message"), 2000);
                 break;
             case ("ch-tl"):
-                this.disabled = true;
-                this.value = "Translating  "
-                this.classList.add("loading", "btn-pd");
+                this._lockButton("Translating ");
                 Translate();
-                setTimeout(() => { this.value = "Translate Message"; this.disabled = false; this.classList.remove("btn-pd", "loading"); }, 2000);
+                setTimeout(() => this._unlockButton("Translate Message"), 2000);
                 break;
             default:
                 return;
         }
     }
+}
+Element.prototype._lockButton = function(text){
+    this.disabled = true;
+    this.value = text || this.value;
+    this.classList.add("loading", "btn-pd");
+}
+Element.prototype._unlockButton = function(text){
+    this.disabled = false; 
+    this.value = text || this.value;; 
+    this.classList.remove("btn-pd", "loading");
 }
 let fls = document.getElementById("files");
 fls.onload = listBucket();
