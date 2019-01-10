@@ -2,6 +2,7 @@ package chatsess
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -26,15 +27,29 @@ func TranslateText(src, tg, text string, sess *session.Session) (string, error) 
 func CountCharacters(count int, sess *session.Session) error {
 	cdb := dynamodb.New(sess)
 	m := int(time.Now().Month())
-	// DEBUG log.Println("Counting: " + strconv.Itoa(count))
+
+	if _, err := cdb.PutItem(&dynamodb.PutItemInput{
+		TableName: aws.String("ch_translation"),
+		Item: map[string]*dynamodb.AttributeValue{
+			"dateid":    {S: aws.String(time.Now().Format(DATE_TL))},
+			"datemonth": {N: aws.String(strconv.Itoa(m))},
+			"datecount": {N: aws.String(strconv.Itoa(count))},
+		},
+		ConditionExpression: aws.String("attribute_not_exists(dateid)"),
+	}); err != nil {
+		if !strings.Contains(err.Error(), "ConditionalCheckFailedException") {
+			return err
+		}
+	}
+
 	_, err := cdb.UpdateItem(&dynamodb.UpdateItemInput{
 		TableName: aws.String("ch_translation"),
 		Key: map[string]*dynamodb.AttributeValue{
 			"dateid":    {S: aws.String(time.Now().Format(DATE_TL))},
 			"datemonth": {N: aws.String(strconv.Itoa(m))},
 		},
-		UpdateExpression:    aws.String("set datecount = datecount + :dcount"),
-		ConditionExpression: aws.String("datecount < :max"),
+		UpdateExpression:    aws.String("ADD datecount :dcount"),
+		ConditionExpression: aws.String("datecount <= :max"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":dcount": {N: aws.String(strconv.Itoa(count))},
 			":max":    {N: aws.String("1600000")},
